@@ -6,7 +6,7 @@ import java.util.concurrent.CountDownLatch;
 public class Main {
     public static void main(String[] args) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        Foo foo = new Foo(countDownLatch);
+        Foo foo = new Foo();
         CompletableFuture.runAsync(foo::second);
 
         CompletableFuture.runAsync(foo::first);

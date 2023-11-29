@@ -1,50 +1,57 @@
 package edu.thread;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Foo {
-    static Semaphore semCon1 = new Semaphore(1);
-    private final CountDownLatch latch;
-
-    public Foo(CountDownLatch countDownLatch) {
+    int threadNumber;
+Lock lock = new ReentrantLock();
+    public Foo() {
         System.out.println("ctor");
-        latch = countDownLatch;
+        threadNumber = 1;
     }
 
-    public void first() {
+    synchronized public void first() {
 //        System.out.println("\nentered first");
-
-        try {
-            semCon1.acquire();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        while (threadNumber != 1) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         System.out.print("first");
-        semCon1.release(2);
+        threadNumber++;
+        notifyAll();
     }
 
-    public void second() {
+    synchronized public void second() {
 //        System.out.println("\nentered second");
-        try {
-            semCon1.acquire(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        while (threadNumber != 2) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         System.out.print("second");
-        semCon1.release(3);
+        threadNumber++;
+        notifyAll();
     }
 
-    public void third() {
+    synchronized public void third() {
 //        System.out.println("\nentered third");
-        try {
-            semCon1.acquire(3);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        while (threadNumber != 3) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         System.out.print("third");
-        semCon1.release();
-        latch.countDown();
+        threadNumber++;
+        notifyAll();
     }
 }
